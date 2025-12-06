@@ -1,34 +1,23 @@
-import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js';
-import { sql as vercelSql } from '@vercel/postgres';
-import { drizzle as drizzleVercel } from 'drizzle-orm/vercel-postgres';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/libsql';
 
 import * as schema from './schema';
 
-// Environment detection:
-// - VERCEL: Running on Vercel platform (use @vercel/postgres)
-// - Otherwise: Local development (use postgres-js with DATABASE_URL)
+// libSQL supports both local files and Turso remote:
+// - Local: DATABASE_URL=file:./local.db
+// - Turso: DATABASE_URL=libsql://xxx.turso.io + DATABASE_AUTH_TOKEN=xxx
 
-const isVercel = !!process.env.VERCEL;
-const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+const databaseUrl = process.env.DATABASE_URL;
 
-function createDb() {
-  if (isVercel) {
-    // Vercel production: use @vercel/postgres (Neon serverless)
-    return drizzleVercel(vercelSql, { schema });
-  }
-
-  if (!databaseUrl) {
-    throw new Error(
-      'DATABASE_URL or POSTGRES_URL environment variable is required for local development'
-    );
-  }
-
-  // Local development: use postgres-js
-  const client = postgres(databaseUrl);
-  return drizzlePostgres(client, { schema });
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL environment variable is required');
 }
 
-export const db = createDb();
+export const db = drizzle({
+  connection: {
+    url: databaseUrl,
+    authToken: process.env.DATABASE_AUTH_TOKEN,
+  },
+  schema,
+});
 
 export * from './schema';
