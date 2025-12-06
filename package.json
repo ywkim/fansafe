@@ -41,6 +41,7 @@
   "dependencies": {
     "@heroicons/react": "^2",
     "@vercel/postgres": "^0.10.0",
+    "better-sqlite3": "^12.5.0",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.0",
     "framer-motion": "^11.2.3",
@@ -60,6 +61,7 @@
     "@tailwindcss/typography": "^0.5.13",
     "@testing-library/jest-dom": "^6.4.3",
     "@testing-library/react": "^15.0.6",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^29.5.x",
     "@types/node": "^20",
     "@types/react": "^18",
