@@ -1,6 +1,4 @@
-# Trade Safety
-
-[![Status](https://img.shields.io/website?url=https%3A%2F%2Faioia.ai%2Ftrade-safety&label=Status)](https://aioia.ai/trade-safety)
+# Fansafe
 
 K-pop 굿즈 거래글 AI 분석 서비스 - Full-stack Next.js 애플리케이션
 
@@ -23,7 +21,7 @@ K-pop 굿즈 거래글 AI 분석 서비스 - Full-stack Next.js 애플리케이�
 |--------|------|
 | Framework | Next.js 14 (App Router) |
 | Language | TypeScript |
-| Database | Drizzle ORM + Vercel Postgres |
+| Database | Drizzle ORM + Turso (libSQL) |
 | LLM | OpenAI SDK (Structured Outputs + Zod) |
 | Styling | Tailwind CSS + DaisyUI |
 | i18n | i18next |
@@ -95,10 +93,11 @@ src/
 
 ## 환경변수
 
-| 변수 | 설명 |
-|------|------|
-| `POSTGRES_URL` | Vercel Postgres 연결 문자열 |
-| `OPENAI_API_KEY` | OpenAI API 키 |
+| 변수 | 설명 | 로컬 | 프로덕션 |
+|------|------|------|---------|
+| `DATABASE_URL` | DB 연결 URL | `file:./local.db` | `libsql://xxx.turso.io` |
+| `DATABASE_AUTH_TOKEN` | Turso 인증 토큰 | 불필요 | 필수 |
+| `OPENAI_API_KEY` | OpenAI API 키 | 필수 | 필수 |
 
 ---
 

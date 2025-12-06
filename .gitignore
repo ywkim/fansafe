@@ -88,4 +88,4 @@ logs/
 .DS_Store
 Thumbs.db
 local.db
-local.db
+.env*.local
