@@ -1,27 +1,17 @@
 {
   "name": "trade-safety",
   "version": "0.1.0",
-  "description": "React components for Trade Safety - K-pop merchandise trade safety analysis",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist"
-  ],
+  "description": "K-pop merchandise trade safety analysis - Full-stack Next.js application",
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "build:lib": "vite build",
-    "dev:lib": "vite build --watch",
-    "clean": "rm -rf dist .next",
+    "clean": "rm -rf .next",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
     "type-check": "tsc --noEmit",
     "lint": "next lint",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
@@ -43,24 +33,25 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/algorima/trade-safety.git",
-    "directory": "frontend"
+    "url": "https://github.com/algorima/trade-safety.git"
   },
   "engines": {
     "node": ">=18.20.0"
   },
-  "peerDependencies": {
-    "@aioia/core": "^0.2.2",
-    "next": "^13.0.0 || ^14.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-  },
   "dependencies": {
+    "@aioia/core": "^0.2.3",
     "@heroicons/react": "^2",
+    "@vercel/postgres": "^0.10.0",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.0",
     "framer-motion": "^11.2.3",
     "i18next": "^23.11.4",
     "i18next-resources-to-backend": "^1.2.1",
+    "nanoid": "^5.1.6",
+    "next": "^14.2.33",
+    "openai": "^6.10.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-i18next": "^14.1.1",
     "zod": "^3.23.8"
   },
@@ -76,9 +67,9 @@
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10",
     "daisyui": "^4.10.5",
+    "drizzle-kit": "^0.31.8",
     "eslint": "^8",
     "eslint-config-next": "13.5.6",
     "eslint-plugin-storybook": "^0.8.0",
@@ -91,8 +82,6 @@
     "semantic-release": "^24.0.0",
     "tailwindcss": "^3",
     "ts-jest": "^29",
-    "typescript": "^5",
-    "vite": "^7.2.4",
-    "vite-plugin-dts": "^4.5.4"
+    "typescript": "^5"
   }
 }
