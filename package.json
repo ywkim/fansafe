@@ -39,7 +39,6 @@
     "node": ">=18.20.0"
   },
   "dependencies": {
-    "@aioia/core": "^0.2.3",
     "@heroicons/react": "^2",
     "@vercel/postgres": "^0.10.0",
     "clsx": "^2.1.1",

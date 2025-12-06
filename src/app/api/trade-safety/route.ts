@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { db, tradeSafetyChecks } from '@/db';
 import { TradeSafetyService } from '@/services/TradeSafetyService';

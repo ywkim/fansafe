@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@aioia/core"],
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/en",
+        source: '/',
+        destination: '/en',
         permanent: false,
       },
     ];

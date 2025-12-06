@@ -1,91 +1,85 @@
-import { BaseCrudRepository } from "@aioia/core";
-import { z } from "zod";
+import { z } from 'zod';
 
-// Zod schema for nested objects
-const riskSignalSchema = z.object({
-  category: z.enum(["payment", "seller", "platform", "price", "content"]),
-  severity: z.enum(["high", "medium", "low"]),
-  title: z.string(),
-  description: z.string(),
-  what_to_do: z.string(),
-});
+import type {
+  QuickCheckResponse,
+  TradeSafetyCheckRequest,
+  TradeSafetyCheckResponse,
+} from '@/types';
 
-const priceAnalysisSchema = z.object({
-  market_price_range: z.string().nullish(),
-  offered_price: z.number().nullish(),
-  currency: z.string().nullish(),
-  price_assessment: z.string(),
-  warnings: z.array(z.string()),
-});
-
-const tradeSafetyAnalysisSchema = z.object({
-  translation: z.string().nullish(),
-  nuance_explanation: z.string().nullish(),
-  risk_signals: z.array(riskSignalSchema),
-  cautions: z.array(riskSignalSchema),
-  safe_indicators: z.array(riskSignalSchema),
-  price_analysis: priceAnalysisSchema,
-  safety_checklist: z.array(z.string()),
-  risk_score: z.number(),
-  recommendation: z.string(),
-  emotional_support: z.string(),
-});
-
+// Zod schemas for validation
 const quickSummarySchema = z.object({
   risk_signals_count: z.number(),
   cautions_count: z.number(),
   safe_indicators_count: z.number(),
 });
 
-const tradeSafetyCheckResponseSchema = z.object({
+const quickCheckResponseSchema = z.object({
   id: z.string(),
-  user_id: z.string().nullish(),
-  input_text: z.string(),
-  llm_analysis: tradeSafetyAnalysisSchema,
-  risk_score: z.number(),
-  expert_advice: z.string().nullish(),
-  expert_reviewed: z.boolean(),
-  expert_reviewed_at: z.string().nullish(),
-  expert_reviewed_by: z.string().nullish(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  quick_summary: quickSummarySchema,
+  signup_required: z.literal(true),
 });
 
-// Full response for authenticated users
-export type TradeSafetyCheckFullResponse = z.infer<
-  typeof tradeSafetyCheckResponseSchema
->;
+// Repository response types
+export type TradeSafetyCheckRepositoryResponse =
+  | TradeSafetyCheckResponse
+  | QuickCheckResponse;
 
-// Quick response for non-authenticated users
-export interface QuickCheckRepositoryResponse {
-  id: string;
-  quick_summary: {
-    risk_signals_count: number;
-    cautions_count: number;
-    safe_indicators_count: number;
-  };
-  signup_required: true;
+// Type guard
+export function isQuickCheckResponse(
+  response: TradeSafetyCheckRepositoryResponse
+): response is QuickCheckResponse {
+  return 'quick_summary' in response && 'signup_required' in response;
 }
 
-// Union type for repository responses
-export type TradeSafetyCheckRepositoryResponse =
-  | TradeSafetyCheckFullResponse
-  | QuickCheckRepositoryResponse;
+export function isFullResponse(
+  response: TradeSafetyCheckRepositoryResponse
+): response is TradeSafetyCheckResponse {
+  return 'llm_analysis' in response;
+}
 
-// Union schema for repository responses
-const tradeSafetyCheckRepositoryResponseSchema = z.union([
-  tradeSafetyCheckResponseSchema,
-  z.object({
-    id: z.string(),
-    quick_summary: quickSummarySchema,
-    signup_required: z.literal(true),
-  }),
-]);
+interface ApiResponse<T> {
+  data: T;
+}
 
-export class TradeSafetyRepository extends BaseCrudRepository<TradeSafetyCheckRepositoryResponse> {
-  readonly resource = "trade-safety";
+export class TradeSafetyRepository {
+  private baseUrl: string;
 
-  protected getDataSchema() {
-    return tradeSafetyCheckRepositoryResponseSchema;
+  constructor(baseUrl: string = '/api') {
+    this.baseUrl = baseUrl;
+  }
+
+  async create(
+    request: TradeSafetyCheckRequest
+  ): Promise<TradeSafetyCheckRepositoryResponse> {
+    const response = await fetch(`${this.baseUrl}/trade-safety`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = (await response.json()) as { detail?: string };
+      throw new Error(error.detail ?? 'Failed to create trade safety check');
+    }
+
+    const json = (await response.json()) as ApiResponse<QuickCheckResponse>;
+    return quickCheckResponseSchema.parse(json.data);
+  }
+
+  async getOne(id: string): Promise<TradeSafetyCheckRepositoryResponse> {
+    const response = await fetch(`${this.baseUrl}/trade-safety/${id}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Trade safety check not found');
+      }
+      const error = (await response.json()) as { detail?: string };
+      throw new Error(error.detail ?? 'Failed to get trade safety check');
+    }
+
+    const json = (await response.json()) as ApiResponse<QuickCheckResponse>;
+    return quickCheckResponseSchema.parse(json.data);
   }
 }

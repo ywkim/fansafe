@@ -1,43 +1,43 @@
-"use client";
+'use client';
 
-import { useParams } from "next/navigation";
-import { useMemo, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { DetailedResult } from "@/components/DetailedResult";
-import { QuickResultTeaser } from "@/components/QuickResultTeaser";
-import { TradeSafetyRepository } from "@/repositories/TradeSafetyRepository";
-import type { TradeSafetyCheckRepositoryResponse } from "@/repositories/TradeSafetyRepository";
-import { getApiService } from "@/services/ApiService";
+import { DetailedResult } from '@/components/DetailedResult';
+import { QuickResultTeaser } from '@/components/QuickResultTeaser';
+import {
+  isQuickCheckResponse,
+  TradeSafetyRepository,
+  type TradeSafetyCheckRepositoryResponse,
+} from '@/repositories/TradeSafetyRepository';
+
+const repository = new TradeSafetyRepository();
 
 export default function TradeSafetyResultPage() {
   const params = useParams();
   const { t } = useTranslation();
   const checkId = params.checkId as string;
 
-  const repository = useMemo<TradeSafetyRepository>(
-    () => new TradeSafetyRepository(getApiService()),
-    [],
-  );
-
-  const [result, setResult] = useState<TradeSafetyCheckRepositoryResponse | null>(null);
+  const [result, setResult] =
+    useState<TradeSafetyCheckRepositoryResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const response = await repository.getOne({ id: checkId });
-        setResult(response.data);
+        const response = await repository.getOne(checkId);
+        setResult(response);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setIsLoading(false);
       }
     };
 
     void fetchResult();
-  }, [checkId, repository]);
+  }, [checkId]);
 
   if (isLoading) {
     return (
@@ -53,14 +53,14 @@ export default function TradeSafetyResultPage() {
     return (
       <div className="container mx-auto px-6 py-20">
         <div className="alert alert-error">
-          <span>{error || t("page.tradeSafety.result.notFound")}</span>
+          <span>{error || t('page.tradeSafety.result.notFound')}</span>
         </div>
       </div>
     );
   }
 
   // Check if it's a quick summary (non-authenticated user)
-  if ("signup_required" in result) {
+  if (isQuickCheckResponse(result)) {
     return (
       <div className="container mx-auto px-6 py-20">
         <QuickResultTeaser summary={result.quick_summary} checkId={checkId} />
@@ -73,10 +73,10 @@ export default function TradeSafetyResultPage() {
     <div className="container mx-auto px-6 py-20">
       <div className="mx-auto mb-12 max-w-4xl text-center">
         <h1 className="mb-4 text-4xl font-bold">
-          {t("page.tradeSafety.result.title")}
+          {t('page.tradeSafety.result.title')}
         </h1>
         <p className="text-xl text-neutral-content">
-          {t("page.tradeSafety.result.subtitle")}
+          {t('page.tradeSafety.result.subtitle')}
         </p>
       </div>
 
