@@ -83,7 +83,6 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
-local_database.db
 
 # OS
 .DS_Store
