@@ -54,6 +54,17 @@ yarn-error.log*
 # Next.js
 .next/
 out/
+/build
+
+# Vercel
+.vercel
+
+# Storybook
+*storybook.log
+storybook-static
+
+# Sentry
+.sentryclirc
 
 # TypeScript
 *.tsbuildinfo
